@@ -1,0 +1,51 @@
+name: 'CI - Stage'
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+  workflow_call:
+
+jobs:
+  compile-and-test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      #set up go version
+      - name: Set up go 1.19
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      #checkout repo
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      #cache go modules
+      - name: Setup Golang with cache
+        uses: magnetikonline/action-golang-cache@v5
+        with:
+          go-version-file: go.mod
+
+      #install static check
+      - name: install static check
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      #run static check
+      - name: run static checks
+        run: ~/go/bin/staticcheck ./...
+
+      # build app
+      - name: build lending app
+        run: go build -o driftreport cmd/main.go
+
+      # run tests
+      - name: Run Test
+        run: go test ./...
+
+
+      # run test coverage
+      - name: Run Test Coverage
+        run: go test -coverprofile=coverage.out ./...

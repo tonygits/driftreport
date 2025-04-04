@@ -1,0 +1,63 @@
+package services
+
+import (
+	"bytes"
+	"context"
+	"github.com/driftreport/mock"
+	"github.com/driftreport/utils"
+	"os"
+	"strings"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+)
+
+func TestDriftReport(t *testing.T) {
+	awsProvider := mock.NewAWSProvider()
+	driftSvc := NewDriftReport(awsProvider)
+	ctx := context.Background()
+	Convey("Drift Report ", t, func() {
+		Convey("load terraform instances", func() {
+			var buffer bytes.Buffer
+			buffer.WriteString("{\n  \"version\": 4,\n  \"terraform_version\": \"1.11.3\",\n  \"serial\": 19,\n  \"lineage\": \"316cb092-46ff-b4dd-1b65-dc61965dbb67\",\n  \"outputs\": {},\n  \"resources\": [\n    {\n      \"mode\": \"managed\",\n      \"type\": \"aws_instance\",\n      \"name\": \"example\",\n      \"provider\": \"provider[\\\"registry.terraform.io/hashicorp/aws\\\"]\",\n      \"instances\": [\n        {\n          \"schema_version\": 1,\n          \"attributes\": {\n            \"ami\": \"ami-005e54dee72cc1d00\",\n            \"arn\": \"arn:aws:ec2:us-west-2:484224457871:instance/i-0c568478aa8a54807\",\n            \"associate_public_ip_address\": true,\n            \"availability_zone\": \"us-west-2a\",\n            \"capacity_reservation_specification\": [\n              {\n                \"capacity_reservation_preference\": \"open\",\n                \"capacity_reservation_target\": []\n              }\n            ],\n            \"cpu_core_count\": 1,\n            \"cpu_options\": [\n              {\n                \"amd_sev_snp\": \"\",\n                \"core_count\": 1,\n                \"threads_per_core\": 1\n              }\n            ],\n            \"cpu_threads_per_core\": 1,\n            \"credit_specification\": [\n              {\n                \"cpu_credits\": \"standard\"\n              }\n            ],\n            \"disable_api_stop\": false,\n            \"disable_api_termination\": false,\n            \"ebs_block_device\": [],\n            \"ebs_optimized\": false,\n            \"enable_primary_ipv6\": null,\n            \"enclave_options\": [\n              {\n                \"enabled\": false\n              }\n            ],\n            \"ephemeral_block_device\": [],\n            \"get_password_data\": false,\n            \"hibernation\": false,\n            \"host_id\": \"\",\n            \"host_resource_group_arn\": null,\n            \"iam_instance_profile\": \"\",\n            \"id\": \"i-0c568478aa8a54807\",\n            \"instance_initiated_shutdown_behavior\": \"stop\",\n            \"instance_lifecycle\": \"\",\n            \"instance_market_options\": [],\n            \"instance_state\": \"running\",\n            \"instance_type\": \"t2.micro\",\n            \"ipv6_address_count\": 0,\n            \"ipv6_addresses\": [],\n            \"key_name\": \"\",\n            \"launch_template\": [],\n            \"maintenance_options\": [\n              {\n                \"auto_recovery\": \"default\"\n              }\n            ],\n            \"metadata_options\": [\n              {\n                \"http_endpoint\": \"enabled\",\n                \"http_protocol_ipv6\": \"disabled\",\n                \"http_put_response_hop_limit\": 1,\n                \"http_tokens\": \"optional\",\n                \"instance_metadata_tags\": \"disabled\"\n              }\n            ],\n            \"monitoring\": false,\n            \"network_interface\": [],\n            \"outpost_arn\": \"\",\n            \"password_data\": \"\",\n            \"placement_group\": \"\",\n            \"placement_partition_number\": 0,\n            \"primary_network_interface_id\": \"eni-0ddc4b72a811b592c\",\n            \"private_dns\": \"ip-172-31-31-247.us-west-2.compute.internal\",\n            \"private_dns_name_options\": [\n              {\n                \"enable_resource_name_dns_a_record\": false,\n                \"enable_resource_name_dns_aaaa_record\": false,\n                \"hostname_type\": \"ip-name\"\n              }\n            ],\n            \"private_ip\": \"172.31.31.247\",\n            \"public_dns\": \"ec2-35-93-149-246.us-west-2.compute.amazonaws.com\",\n            \"public_ip\": \"35.93.149.246\",\n            \"root_block_device\": [\n              {\n                \"delete_on_termination\": true,\n                \"device_name\": \"/dev/sda1\",\n                \"encrypted\": false,\n                \"iops\": 100,\n                \"kms_key_id\": \"\",\n                \"tags\": {},\n                \"tags_all\": {},\n                \"throughput\": 0,\n                \"volume_id\": \"vol-01beefbe457de85bb\",\n                \"volume_size\": 8,\n                \"volume_type\": \"gp2\"\n              }\n            ],\n            \"secondary_private_ips\": [],\n            \"security_groups\": [\n              \"example-security-group\"\n            ],\n            \"source_dest_check\": true,\n            \"spot_instance_request_id\": \"\",\n            \"subnet_id\": \"subnet-0fc1fb3eb37e2b40c\",\n            \"tags\": {\n              \"Name\": \"TestInstance\"\n            },\n            \"tags_all\": {\n              \"Name\": \"TestInstance\"\n            },\n            \"tenancy\": \"default\",\n            \"timeouts\": null,\n            \"user_data\": null,\n            \"user_data_base64\": null,\n            \"user_data_replace_on_change\": false,\n            \"volume_tags\": null,\n            \"vpc_security_group_ids\": [\n              \"sg-091fde8327f3fe99a\"\n            ]\n          },\n          \"sensitive_attributes\": [],\n          \"private\": \"eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwicmVhZCI6OTAwMDAwMDAwMDAwLCJ1cGRhdGUiOjYwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9\",\n          \"dependencies\": [\n            \"aws_security_group.example_sg\"\n          ]\n        }\n      ]\n    }\n  ],\n  \"check_results\": null\n}\n")
+			content, err := utils.ReadFile(&buffer)
+			So(err, ShouldBeNil)
+			// write the whole body at once on terraform.tfstate.json
+			err = os.WriteFile("terraform.tfstate.json", content, 0644)
+			So(err, ShouldBeNil)
+
+			instanceIds, instances, err := loadTerraformInstances("terraform.tfstate.json")
+			So(err, ShouldBeNil)
+			So(len(instanceIds), ShouldEqual, 1)
+			So(len(instances), ShouldEqual, 1)
+		})
+
+		Convey("detect drift", func() {
+			var buffer bytes.Buffer
+			buffer.WriteString("{\n  \"version\": 4,\n  \"terraform_version\": \"1.11.3\",\n  \"serial\": 19,\n  \"lineage\": \"316cb092-46ff-b4dd-1b65-dc61965dbb67\",\n  \"outputs\": {},\n  \"resources\": [\n    {\n      \"mode\": \"managed\",\n      \"type\": \"aws_instance\",\n      \"name\": \"example\",\n      \"provider\": \"provider[\\\"registry.terraform.io/hashicorp/aws\\\"]\",\n      \"instances\": [\n        {\n          \"schema_version\": 1,\n          \"attributes\": {\n            \"ami\": \"ami-005e54dee72cc1d00\",\n            \"arn\": \"arn:aws:ec2:us-west-2:484224457871:instance/i-0c568478aa8a54807\",\n            \"associate_public_ip_address\": true,\n            \"availability_zone\": \"us-west-2a\",\n            \"capacity_reservation_specification\": [\n              {\n                \"capacity_reservation_preference\": \"open\",\n                \"capacity_reservation_target\": []\n              }\n            ],\n            \"cpu_core_count\": 1,\n            \"cpu_options\": [\n              {\n                \"amd_sev_snp\": \"\",\n                \"core_count\": 1,\n                \"threads_per_core\": 1\n              }\n            ],\n            \"cpu_threads_per_core\": 1,\n            \"credit_specification\": [\n              {\n                \"cpu_credits\": \"standard\"\n              }\n            ],\n            \"disable_api_stop\": false,\n            \"disable_api_termination\": false,\n            \"ebs_block_device\": [],\n            \"ebs_optimized\": false,\n            \"enable_primary_ipv6\": null,\n            \"enclave_options\": [\n              {\n                \"enabled\": false\n              }\n            ],\n            \"ephemeral_block_device\": [],\n            \"get_password_data\": false,\n            \"hibernation\": false,\n            \"host_id\": \"\",\n            \"host_resource_group_arn\": null,\n            \"iam_instance_profile\": \"\",\n            \"id\": \"i-0c568478aa8a54807\",\n            \"instance_initiated_shutdown_behavior\": \"stop\",\n            \"instance_lifecycle\": \"\",\n            \"instance_market_options\": [],\n            \"instance_state\": \"running\",\n            \"instance_type\": \"t2.micro\",\n            \"ipv6_address_count\": 0,\n            \"ipv6_addresses\": [],\n            \"key_name\": \"\",\n            \"launch_template\": [],\n            \"maintenance_options\": [\n              {\n                \"auto_recovery\": \"default\"\n              }\n            ],\n            \"metadata_options\": [\n              {\n                \"http_endpoint\": \"enabled\",\n                \"http_protocol_ipv6\": \"disabled\",\n                \"http_put_response_hop_limit\": 1,\n                \"http_tokens\": \"optional\",\n                \"instance_metadata_tags\": \"disabled\"\n              }\n            ],\n            \"monitoring\": false,\n            \"network_interface\": [],\n            \"outpost_arn\": \"\",\n            \"password_data\": \"\",\n            \"placement_group\": \"\",\n            \"placement_partition_number\": 0,\n            \"primary_network_interface_id\": \"eni-0ddc4b72a811b592c\",\n            \"private_dns\": \"ip-172-31-31-247.us-west-2.compute.internal\",\n            \"private_dns_name_options\": [\n              {\n                \"enable_resource_name_dns_a_record\": false,\n                \"enable_resource_name_dns_aaaa_record\": false,\n                \"hostname_type\": \"ip-name\"\n              }\n            ],\n            \"private_ip\": \"172.31.31.247\",\n            \"public_dns\": \"ec2-35-93-149-246.us-west-2.compute.amazonaws.com\",\n            \"public_ip\": \"35.93.149.246\",\n            \"root_block_device\": [\n              {\n                \"delete_on_termination\": true,\n                \"device_name\": \"/dev/sda1\",\n                \"encrypted\": false,\n                \"iops\": 100,\n                \"kms_key_id\": \"\",\n                \"tags\": {},\n                \"tags_all\": {},\n                \"throughput\": 0,\n                \"volume_id\": \"vol-01beefbe457de85bb\",\n                \"volume_size\": 8,\n                \"volume_type\": \"gp2\"\n              }\n            ],\n            \"secondary_private_ips\": [],\n            \"security_groups\": [\n              \"example-security-group\"\n            ],\n            \"source_dest_check\": true,\n            \"spot_instance_request_id\": \"\",\n            \"subnet_id\": \"subnet-0fc1fb3eb37e2b40c\",\n            \"tags\": {\n              \"Name\": \"TestInstance\"\n            },\n            \"tags_all\": {\n              \"Name\": \"TestInstance\"\n            },\n            \"tenancy\": \"default\",\n            \"timeouts\": null,\n            \"user_data\": null,\n            \"user_data_base64\": null,\n            \"user_data_replace_on_change\": false,\n            \"volume_tags\": null,\n            \"vpc_security_group_ids\": [\n              \"sg-091fde8327f3fe99a\"\n            ]\n          },\n          \"sensitive_attributes\": [],\n          \"private\": \"eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwicmVhZCI6OTAwMDAwMDAwMDAwLCJ1cGRhdGUiOjYwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9\",\n          \"dependencies\": [\n            \"aws_security_group.example_sg\"\n          ]\n        }\n      ]\n    }\n  ],\n  \"check_results\": null\n}\n")
+			content, err := utils.ReadFile(&buffer)
+			So(err, ShouldBeNil)
+			// write the whole body at once on terraform.tfstate.json
+			err = os.WriteFile("terraform.tfstate.json", content, 0644)
+			So(err, ShouldBeNil)
+
+			instanceIds, instances, err := loadTerraformInstances("terraform.tfstate.json")
+			So(err, ShouldBeNil)
+			So(len(instanceIds), ShouldEqual, 1)
+			So(len(instances), ShouldEqual, 1)
+
+			attributesList := "instance_type,security_groups,tags"
+			attributes := make(map[string]bool)
+			for _, attr := range strings.Split(attributesList, ",") {
+				attributes[attr] = false
+			}
+			_, err = driftSvc.DetectDrift(ctx, instanceIds[0], instances[0], attributes)
+			So(err, ShouldNotBeNil)
+		})
+
+		Convey("generate drift reports", func() {
+			err := driftSvc.GenerateDriftReport(ctx)
+			So(err, ShouldBeNil)
+		})
+	})
+}
