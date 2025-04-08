@@ -26,7 +26,7 @@ func TestDriftReportService(t *testing.T) {
 	defer cancel1()
 
 	Convey("load terraform instances from terraform.tfstate.json file", t, func() {
-		instances, err := loadTerraformStateInstances("../terraform/terraform.tfstate.json")
+		instances, err := loadTerraformStateInstances("../terraform.tfstate.json")
 		So(err, ShouldBeNil)
 		So(len(instances), ShouldEqual, 1)
 	})
@@ -36,16 +36,16 @@ func TestDriftReportService(t *testing.T) {
 		buffer.WriteString("")
 		content, err := io.ReadAll(&buffer)
 		So(err, ShouldBeNil)
-		err = os.WriteFile("../terraform/tfstate.json", content, 0644)
+		err = os.WriteFile("../tfstate.json", content, 0644)
 		So(err, ShouldBeNil)
 
-		_, err = loadTerraformStateInstances("../terraform/tfstate.json")
+		_, err = loadTerraformStateInstances("../tfstate.json")
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldEqual, "failed with code 400: .tfstate is empty")
 	})
 
 	Convey("general drift report with no attributes", t, func() {
-		instances, err := loadTerraformStateInstances("../terraform/terraform.tfstate.json")
+		instances, err := loadTerraformStateInstances("../terraform.tfstate.json")
 		So(err, ShouldBeNil)
 		So(len(instances), ShouldEqual, 1)
 
@@ -59,7 +59,7 @@ func TestDriftReportService(t *testing.T) {
 	})
 
 	Convey("general drift report with attributes", t, func() {
-		instances, err := loadTerraformStateInstances("../terraform/terraform.tfstate.json")
+		instances, err := loadTerraformStateInstances("../terraform.tfstate.json")
 		So(err, ShouldBeNil)
 		So(len(instances), ShouldEqual, 1)
 

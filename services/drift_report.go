@@ -34,7 +34,7 @@ func NewDriftReport(awsProvider providers.AWSProvider) DriftReport {
 
 //PrintDriftReport prints (in JSON) the reports added on the buffered channel
 func (s *AppDriftReport) PrintDriftReport(ctx context.Context) error {
-	tfInstances, err := loadTerraformStateInstances("../terraform/terraform.tfstate.json")
+	tfInstances, err := loadTerraformStateInstances("../terraform.tfstate.json")
 	if err != nil {
 		utils.Logger.Sugar().Errorf("error loading Terraform state: %v", err)
 		return &entities.CustomError{
@@ -108,11 +108,7 @@ func loadTerraformStateInstances(filePath string) ([]*entities.Instance, error) 
 	// Look for an EC2 instance in the state file
 	for _, resource := range terraformState.Resources {
 		if resource.Type == "aws_instance" {
-			if len(resource.Instances) > 0 {
-				for _, resourceInstance := range resource.Instances {
-					tfInstances = append(tfInstances, resourceInstance)
-				}
-			}
+			tfInstances = append(tfInstances, resource.Instances...)
 		}
 	}
 

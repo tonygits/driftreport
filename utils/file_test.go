@@ -14,7 +14,7 @@ func TestLoadTerraformFileUtil(t *testing.T) {
 	defer logger.Sync() // Flush any buffered log messages
 
 	Convey("get resources from terraform state json", t, func() {
-		state, err := ParseTerraformState("../terraform/terraform.tfstate.json")
+		state, err := ParseTerraformState("../terraform.tfstate.json")
 		So(err, ShouldBeNil)
 		So(len(state.Resources), ShouldEqual, 1)
 	})
@@ -25,10 +25,10 @@ func TestLoadTerraformFileUtil(t *testing.T) {
 		content, err := io.ReadAll(&buffer)
 		So(err, ShouldBeNil)
 		// write the whole body at once on tfstate.json
-		err = os.WriteFile("../terraform/tfstate.json", content, 0644)
+		err = os.WriteFile("../tfstate.json", content, 0644)
 		So(err, ShouldBeNil)
 
-		_, err = ParseTerraformState("../terraform/tfstate.json")
+		_, err = ParseTerraformState("../tfstate.json")
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldEqual, "failed with code 400: .tfstate is empty")
 	})
