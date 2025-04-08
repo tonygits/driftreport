@@ -2,35 +2,44 @@ package utils
 
 import (
 	"encoding/json"
-	"io"
+	"errors"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/driftreport/entities"
 )
 
+//ParseTerraformState parses data from the terraform tfstate json file to TerraformState struct
 func ParseTerraformState(filePath string) (*entities.TerraformState, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Fatalf("Error reading Terraform state file: %v", err)
-		return nil, err
+		Logger.Sugar().Errorf("error reading terraform state file: %v", err)
+		return nil, &entities.CustomError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	//check if file is empty
+	if len(data) == 0 {
+		Logger.Sugar().Error(".tfstate is empty")
+		return nil, &entities.CustomError{
+			StatusCode: http.StatusBadRequest,
+			Err:        errors.New(".tfstate is empty"),
+		}
 	}
 
 	// Parse JSON
 	var state entities.TerraformState
 	err = json.Unmarshal(data, &state)
 	if err != nil {
-		log.Fatalf("Error parsing Terraform state file: %v", err)
-		return nil, err
+		log.Printf("Error parsing Terraform state file: %v", err)
+		return nil, &entities.CustomError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
 	}
 
 	return &state, nil
-}
-
-func ReadFile(reader io.Reader) ([]byte, error) {
-	all, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-	return all, nil
 }

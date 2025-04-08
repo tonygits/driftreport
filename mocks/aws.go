@@ -1,10 +1,11 @@
-package mock
+package mocks
 
 import (
 	"context"
+	"log"
+
 	"github.com/driftreport/entities"
 	"github.com/driftreport/providers"
-	"log"
 )
 
 type (

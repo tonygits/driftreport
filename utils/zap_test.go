@@ -1,33 +1,48 @@
 package utils
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
+	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"go.uber.org/zap/zaptest/observer"
 )
 
-func TestZapLogger(t *testing.T) {
-	Convey("TestZapLogger", t, func() {
-		Convey("Zap logger ", func() {
-			logger, logs := setupLogsCapture()
+func TestErrorLogging(t *testing.T) {
+	// initialize core logger
+	zapCore := zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		os.Stderr,
+		zapcore.InfoLevel,
+	)
 
-			logger.Warn("This is the warning")
+	Convey("can handle error level logs", t, func() {
+		// test core
+		observed, logs := observer.New(zapcore.InfoLevel)
 
-			if logs.Len() != 1 {
-				t.Errorf("No logs")
-			} else {
-				entry := logs.All()[0]
-				if entry.Level != zap.WarnLevel || entry.Message != "This is the warning" {
-					t.Errorf("Invalid log entry %v", entry)
-				}
-			}
-		})
+		// new logger test
+		logger := zap.New(zapcore.NewTee(zapCore, observed))
+		logger.Error("zap logger test")
+
+		entry := logs.All()[0]
+		So(entry.Message, ShouldEqual, "zap logger test")
+		So(entry.Level, ShouldEqual, zapcore.ErrorLevel)
 	})
-}
 
-func setupLogsCapture() (*zap.Logger, *observer.ObservedLogs) {
-	core, logs := observer.New(zap.InfoLevel)
-	return zap.New(core), logs
+	Convey("must print the logged message", t, func() {
+		// test core
+		observed, logs := observer.New(zapcore.InfoLevel)
+
+		// new logger test
+		logger := zap.New(zapcore.NewTee(zapCore, observed))
+		logger.Info("new logger test")
+
+		entry := logs.All()[0]
+		So(entry.Message, ShouldNotEqual, "zap logger test")
+		So(entry.Message, ShouldEqual, "new logger test")
+		So(entry.Level, ShouldNotEqual, zapcore.ErrorLevel)
+		So(entry.Level, ShouldEqual, zapcore.InfoLevel)
+	})
 }

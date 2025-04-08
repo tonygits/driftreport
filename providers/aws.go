@@ -2,13 +2,14 @@ package providers
 
 import (
 	"context"
-	"fmt"
-	"log"
+	"errors"
+	"net/http"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/driftreport/entities"
+	"github.com/driftreport/utils"
 )
 
 type (
@@ -33,8 +34,11 @@ func NewAWSProviderWithCredentials(
 ) (AWSProvider, error) {
 	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(os.Getenv("AWS_REGION")))
 	if err != nil {
-		log.Printf("failed to load default config: %v", err)
-		return nil, err
+		utils.Logger.Sugar().Errorf("failed to load default config: %v", err)
+		return nil, &entities.CustomError{
+			StatusCode: http.StatusUnauthorized,
+			Err:        err,
+		}
 	}
 
 	client := ec2.NewFromConfig(cfg)
@@ -44,19 +48,27 @@ func NewAWSProviderWithCredentials(
 	}, nil
 }
 
+//GetEC2Instance get EC2 instance from AWS account
 func (a *AppAWSProvider) GetEC2Instance(ctx context.Context, instanceID string) (*entities.EC2Instance, error) {
 	input := &ec2.DescribeInstancesInput{
 		InstanceIds: []string{instanceID},
 	}
+
 	result, err := a.client.DescribeInstances(ctx, input)
 	if err != nil {
-		log.Printf("failed to describe instances: %v", err)
-		return nil, err
+		utils.Logger.Sugar().Errorf("failed to describe instances: %v", err)
+		return nil, &entities.CustomError{
+			StatusCode: http.StatusBadRequest,
+			Err:        err,
+		}
 	}
 
 	if len(result.Reservations) == 0 || len(result.Reservations[0].Instances) == 0 {
-		log.Println("instance not found")
-		return nil, fmt.Errorf("instance not found")
+		utils.Logger.Sugar().Warn("no instances found")
+		return nil, &entities.CustomError{
+			StatusCode: http.StatusNotFound,
+			Err:        errors.New("no instances found"),
+		}
 	}
 
 	instance := result.Reservations[0].Instances[0]

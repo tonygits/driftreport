@@ -1,4 +1,4 @@
-name: 'CI - Stage'
+name: 'CI - Drift Report'
 
 on:
   push:
@@ -40,14 +40,13 @@ jobs:
       - name: run static checks
         run: ~/go/bin/staticcheck ./...
 
-      # build app
-      - name: build lending app
+      # build drift report app
+      - name: build drift report app
         run: go build -o driftreport cmd/main.go
 
       # run tests
       - name: Run Test
         run: go test ./...
-
 
       # run test coverage
       - name: Run Test Coverage
