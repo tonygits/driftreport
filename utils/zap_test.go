@@ -13,14 +13,14 @@ import (
 func TestErrorLogging(t *testing.T) {
 	// initialize core logger
 	zapCore := zapcore.NewCore(
-		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()),
 		os.Stderr,
-		zapcore.InfoLevel,
+		zapcore.DebugLevel,
 	)
 
 	Convey("can handle error level logs", t, func() {
 		// test core
-		observed, logs := observer.New(zapcore.InfoLevel)
+		observed, logs := observer.New(zapcore.DebugLevel)
 
 		// new logger test
 		logger := zap.New(zapcore.NewTee(zapCore, observed))
