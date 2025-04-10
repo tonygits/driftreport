@@ -7,6 +7,7 @@ toolchain go1.23.0
 require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.211.0
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/joho/godotenv v1.5.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/smartystreets/goconvey v1.8.1

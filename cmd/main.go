@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
+	"github.com/caarlos0/env/v11"
+	"github.com/driftreport/entities"
 	"github.com/driftreport/providers"
 	"github.com/driftreport/services"
 	"github.com/driftreport/utils"
@@ -13,12 +14,31 @@ import (
 )
 
 func main() {
+	// Load environment variables from .env file
+	err := godotenv.Load(".env")
+	if err != nil {
+		utils.Logger.Sugar().Errorf("error loading .env file: %v", err)
+		return
+	}
+
+	var appConfig entities.AppConfig
+	if err := env.Parse(&appConfig); err != nil {
+		utils.Logger.Sugar().Errorf("error reading the environment variables: %v", err)
+		return
+	}
+
+	if appConfig.Environment == "" {
+		utils.Logger.Sugar().Error("environment not set")
+		return
+	}
+	log.Printf("ENVIRONMENT=[%v]", appConfig.Environment)
+
 	//initialize zap logging
 	logger := utils.InitZapLog()
 	defer logger.Sync() // Flush any buffered log messages
 
 	//initialize AWS EC2 provider
-	awsProvider, err := providers.NewAWSProvider()
+	awsProvider, err := providers.NewAWSProvider(appConfig.AWSRegion)
 	if err != nil {
 		utils.Logger.Sugar().Errorf("error creating AWS provider: %v", err)
 		return
@@ -26,18 +46,6 @@ func main() {
 
 	//initialize drift report service
 	svc := services.NewDriftReport(awsProvider)
-	err = godotenv.Load(".env")
-	if err != nil {
-		utils.Logger.Sugar().Errorf("error loading .env file: %v", err)
-		return
-	}
-
-	if os.Getenv("ENVIRONMENT") == "" {
-		utils.Logger.Sugar().Error("environment not set")
-		return
-	}
-
-	log.Printf("ENVIRONMENT=[%v]", os.Getenv("ENVIRONMENT"))
 
 	//context.WithTimeout() to allow early exit when deadline is exceeded
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

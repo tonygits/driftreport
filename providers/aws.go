@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -23,16 +22,10 @@ type (
 	}
 )
 
-func NewAWSProvider() (AWSProvider, error) {
-	return NewAWSProviderWithCredentials(
-		os.Getenv("AWS_REGION"),
-	)
-}
-
-func NewAWSProviderWithCredentials(
+func NewAWSProvider(
 	awsRegion string,
 ) (AWSProvider, error) {
-	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(os.Getenv("AWS_REGION")))
+	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(awsRegion))
 	if err != nil {
 		utils.Logger.Sugar().Errorf("failed to load default config: %v", err)
 		return nil, &entities.CustomError{
