@@ -18,16 +18,29 @@ func TestErrorLogging(t *testing.T) {
 		zapcore.DebugLevel,
 	)
 
-	Convey("can handle error level logs", t, func() {
+	Convey("can handle info level logs", t, func() {
 		// test core
 		observed, logs := observer.New(zapcore.DebugLevel)
 
 		// new logger test
 		logger := zap.New(zapcore.NewTee(zapCore, observed))
-		logger.Error("zap logger test")
+		logger.Info("zap log info")
 
 		entry := logs.All()[0]
-		So(entry.Message, ShouldEqual, "zap logger test")
+		So(entry.Message, ShouldEqual, "zap log info")
+		So(entry.Level, ShouldEqual, zapcore.InfoLevel)
+	})
+
+	Convey("can handle error level logs", t, func() {
+		// test core
+		observed, logs := observer.New(zapcore.ErrorLevel)
+
+		// new logger test
+		logger := zap.New(zapcore.NewTee(zapCore, observed))
+		logger.Error("zap log error")
+
+		entry := logs.All()[0]
+		So(entry.Message, ShouldEqual, "zap log error")
 		So(entry.Level, ShouldEqual, zapcore.ErrorLevel)
 	})
 
