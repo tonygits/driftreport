@@ -145,24 +145,10 @@ func loadTerraformStateInstances(filePath string) (map[string]*entities.EC2Insta
 	for _, instance := range tfInstances {
 		tfInstanceIds = append(tfInstanceIds, instance.Attributes.InstanceID)
 		attrs := instance.Attributes
-		var sgs []string
-		if len(attrs.SecurityGroups) > 0 {
-			for _, sg := range attrs.SecurityGroups {
-				sgs = append(sgs, sg)
-			}
-		}
-
-		tags := make(map[string]string)
-		if len(attrs.Tags) > 0 {
-			for k, v := range attrs.Tags {
-				tags[k] = fmt.Sprintf("%v", v)
-			}
-		}
-
 		tfInstanceMap[instance.Attributes.InstanceID] = &entities.EC2Instance{
 			InstanceType:   attrs.Type,
-			SecurityGroups: sgs,
-			Tags:           tags,
+			SecurityGroups: attrs.SecurityGroups,
+			Tags:           attrs.Tags,
 		}
 	}
 
