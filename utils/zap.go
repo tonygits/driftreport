@@ -19,7 +19,6 @@ func InitZapLog() *zap.Logger {
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
-	if !testing.Testing() {
 		// Log levels
 		highPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool { // Error level
 			return lev >= zap.ErrorLevel
@@ -28,6 +27,7 @@ func InitZapLog() *zap.Logger {
 			return lev < zap.ErrorLevel && lev >= zap.DebugLevel
 		})
 
+	if !testing.Testing() {
 		// Info file writeSyncer
 		infoFileWriteSyncer := zapcore.AddSync(&lumberjack.Logger{
 			Filename:   "./log/info.log", // Log file storage directory. If the folder does not exist, it will be created automatically.
@@ -50,8 +50,10 @@ func InitZapLog() *zap.Logger {
 		coreArr = append(coreArr, infoFileCore)
 		coreArr = append(coreArr, errorFileCore)
 	} else {
-		// In test mode, only log to stdout
-		coreArr = append(coreArr, zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zap.DebugLevel))
+		infoCore := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)), lowPriority)
+		errorCore := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)), highPriority)
+		coreArr = append(coreArr, infoCore)
+		coreArr = append(coreArr, errorCore)
 	}
 	// Return the logger
 	Logger = zap.New(zapcore.NewTee(coreArr...), zap.AddCaller())

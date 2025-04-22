@@ -17,7 +17,7 @@ func NewAWSProvider() providers.AWSProvider {
 	return &MockAWSProvider{}
 }
 
-func (s *MockAWSProvider) GetEC2Instance(ctx context.Context, instanceId string) (*entities.EC2Instance, error) {
-	log.Printf("get ec2 instance by %s", instanceId)
-	return &entities.EC2Instance{}, nil
+func (s *MockAWSProvider) GetEC2Instances(ctx context.Context, instanceIds []string) (map[string]*entities.EC2Instance, error) {
+	log.Printf("get ec2 instances by %s", instanceIds)
+	return map[string]*entities.EC2Instance{}, nil
 }

@@ -14,6 +14,10 @@ import (
 )
 
 func main() {
+	//initialize zap logging
+	logger := utils.InitZapLog()
+	defer logger.Sync() // Flush any buffered log messages
+
 	// Load environment variables from .env file
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -33,10 +37,6 @@ func main() {
 	}
 	log.Printf("ENVIRONMENT=[%v]", appConfig.Environment)
 
-	//initialize zap logging
-	logger := utils.InitZapLog()
-	defer logger.Sync() // Flush any buffered log messages
-
 	//initialize AWS EC2 provider
 	awsProvider, err := providers.NewAWSProvider(appConfig.AWSRegion)
 	if err != nil {
@@ -45,10 +45,10 @@ func main() {
 	}
 
 	//initialize drift report service
-	svc := services.NewDriftReport(awsProvider)
+	svc := services.NewDriftReportService(awsProvider)
 
 	//context.WithTimeout() to allow early exit when deadline is exceeded
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err = svc.PrintDriftReport(ctx)
 	if err != nil {
